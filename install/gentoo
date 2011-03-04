@@ -1,0 +1,17 @@
+#!/bin/bash
+
+git clone git://github.com/Vaizard/MurmurHash3PHP.git
+cd MurmurHash3PHP
+phpize
+aclocal
+libtoolize --force
+autoheader
+autoconf
+./configure --enable-murmurhash3
+make
+make install
+cp 06_murmurhash3.ini /etc/php/apache2-php5.3/ext/murmurhash3.ini
+ln -sf /etc/php/apache2-php5.3/ext/murmurhash3.ini /etc/php/apache2-php5.3/ext-active/murmurhash3.ini
+cp 06_murmurhash3.ini /etc/php/cli-php5.3/ext/murmurhash3.ini
+ln -sf /etc/php/cli-php5.3/ext/murmurhash3.ini /etc/php/cli-php5.3/ext-active/murmurhash3.ini
+
