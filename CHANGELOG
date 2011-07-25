@@ -2,3 +2,6 @@
 (v0.1)
   * Initial version
 
+07-JUL-2011 16:45 CET 2011  Jaromir Capik <tavvva@email.cz>
+(v0.2)
+  * Update to revision 136 of MurmurHash3 (marked as final)

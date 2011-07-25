@@ -26,7 +26,9 @@ extern "C" {
   #include "php_murmurhash3.h"
 }
 
-#include "MurmurHash3.hpp"
+#include "MurmurHash3.h"
+
+#define MURMURHASH3_OUTPUT_LENGTH	16
 
 
 static function_entry murmurhash3_functions[] = {
