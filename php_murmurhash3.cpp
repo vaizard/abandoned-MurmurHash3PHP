@@ -28,11 +28,14 @@ extern "C" {
 
 #include "MurmurHash3.h"
 
-#define MURMURHASH3_OUTPUT_LENGTH	16
+#define MURMURHASH3_128_OUTPUT_LENGTH 16
+#define MURMURHASH3_32_OUTPUT_LENGTH  4
 
 
 static function_entry murmurhash3_functions[] = {
-    PHP_FE(murmurhash3, NULL)
+    ZEND_FALIAS(murmurhash3, murmurhash3_128, NULL)
+    ZEND_FE(murmurhash3_128, NULL)
+    ZEND_FE(murmurhash3_32, NULL)
     {NULL, NULL, NULL}
 };
 
@@ -68,13 +71,13 @@ void c2h(uint8_t c, char *r)
   r[1] = hex[c % 16];
 }
 
-PHP_FUNCTION(murmurhash3)
+ZEND_FUNCTION(murmurhash3_128)
 {
     char *key;
     int key_len;
     long seed;
-    char output[MURMURHASH3_OUTPUT_LENGTH + 1];
-    char result[MURMURHASH3_OUTPUT_LENGTH * 2 + 1];
+    char output[MURMURHASH3_128_OUTPUT_LENGTH + 1];
+    char result[MURMURHASH3_128_OUTPUT_LENGTH * 2 + 1];
 
     // Parse the input parameters
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &key, &key_len, &seed) == FAILURE) {
@@ -83,13 +86,40 @@ PHP_FUNCTION(murmurhash3)
 
     // Calculate the hash
     MurmurHash3_x64_128 ( key, key_len, (uint32_t)seed, output );
-    output[MURMURHASH3_OUTPUT_LENGTH] = 0;
+    output[MURMURHASH3_128_OUTPUT_LENGTH] = 0;
 
     // Convert to HEX
-    for (int i=0; i<MURMURHASH3_OUTPUT_LENGTH; i++) {
+    for (int i=0; i<MURMURHASH3_128_OUTPUT_LENGTH; i++) {
       c2h(output[i], &result[i*2]);
     }
-    result[MURMURHASH3_OUTPUT_LENGTH * 2] = 0;
+    result[MURMURHASH3_128_OUTPUT_LENGTH * 2] = 0;
+
+    // Return the result
+    RETURN_STRING(result, 1);
+}
+
+ZEND_FUNCTION(murmurhash3_32)
+{
+    char *key;
+    int key_len;
+    long seed;
+    char output[MURMURHASH3_32_OUTPUT_LENGTH + 1];
+    char result[MURMURHASH3_32_OUTPUT_LENGTH * 2 + 1];
+
+    // Parse the input parameters
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl", &key, &key_len, &seed) == FAILURE) {
+        RETURN_NULL();
+    }
+
+    // Calculate the hash
+    MurmurHash3_x86_32 ( key, key_len, (uint32_t)seed, output );
+    output[MURMURHASH3_32_OUTPUT_LENGTH] = 0;
+
+    // Convert to HEX
+    for (int i=0; i<MURMURHASH3_32_OUTPUT_LENGTH; i++) {
+      c2h(output[i], &result[i*2]);
+    }
+    result[MURMURHASH3_32_OUTPUT_LENGTH * 2] = 0;
 
     // Return the result
     RETURN_STRING(result, 1);
